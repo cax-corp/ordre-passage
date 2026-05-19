@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ordre de passage</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-bg" aria-hidden="true"></div>
+    <main class="layout">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Session live</p>
+          <h1>Ordre de passage</h1>
+          <p class="subtitle">Suivi en temps reel des groupes et de leur progression.</p>
+        </div>
+        <div class="topbar-actions">
+          <span id="connectionBadge" class="connection connection--offline">Hors ligne</span>
+          <button id="adminBtn" class="btn btn--primary" type="button">Acces admin</button>
+        </div>
+      </header>
+
+      <section class="legend" aria-label="Legende des statuts">
+        <span class="chip chip--neutral">Neutre</span>
+        <span class="chip chip--preparing">Se preparent</span>
+        <span class="chip chip--in-progress">En cours</span>
+        <span class="chip chip--done">Termine</span>
+      </section>
+
+      <section class="board">
+        <table>
+          <thead>
+            <tr>
+              <th>Heure</th>
+              <th>Groupe</th>
+              <th>Statut</th>
+              <th id="adminColumnTitle" class="admin-col hidden">Admin</th>
+            </tr>
+          </thead>
+          <tbody id="scheduleBody"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./config.js"></script>
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>
