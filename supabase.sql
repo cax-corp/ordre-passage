@@ -76,6 +76,13 @@ revoke all on public.schedule_entries from authenticated;
 
 grant select on public.schedule_entries to anon, authenticated;
 
+drop policy if exists "public read schedule entries" on public.schedule_entries;
+create policy "public read schedule entries"
+on public.schedule_entries
+for select
+to anon, authenticated
+using (true);
+
 create or replace function public.verify_admin_password(input_password text)
 returns boolean
 language plpgsql
