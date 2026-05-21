@@ -309,4 +309,26 @@ tbody tr:not(.row--break):hover td {
     font-size: 12px;
     padding: 5px 6px;
   }
+  .status {
+  padding: 0.3em 1em;
+  border-radius: 16px;
+  color: #fff;
+  font-weight: 600;
+  display: inline-block;
+  min-width: 90px;
+  text-align: center;
+}
+
+/* Couleurs selon le statut */
+.status--attente     { background: #bdbdbd; }
+.status--encours     { background: #ff1744; position: relative; animation: pulse 1s infinite; }
+.status--termine     { background: #1de9b6; }
+.status--annule      { background: #ffaa00; color: #333; }
+.status--probleme    { background: #d50000; }
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 23, 68, 0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(255, 23, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 23, 68, 0); }
+}
 }
