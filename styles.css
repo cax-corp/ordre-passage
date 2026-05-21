@@ -207,6 +207,11 @@ tbody tr:not(.row--break):hover td {
   text-transform: uppercase;
 }
 
+/* Ligne avec pulsation quand statut "En cours" */
+tbody tr:has(.status--in-progress) {
+  animation: pulse-row 1.5s ease-in-out infinite;
+}
+
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -235,7 +240,7 @@ tbody tr:not(.row--break):hover td {
   background: #f44336 !important;
   color: #ffffff !important;
   border-color: #c62828 !important;
-  animation: pulse-red 1.5s ease-in-out infinite !important;
+  animation: pulse-badge 1.5s ease-in-out infinite !important;
 }
 
 .status--done {
@@ -244,8 +249,8 @@ tbody tr:not(.row--break):hover td {
   border-color: #2e7d32 !important;
 }
 
-/* Animation pulse pour "En cours" */
-@keyframes pulse-red {
+/* Animation pulse sur le badge */
+@keyframes pulse-badge {
   0% {
     box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7);
   }
@@ -254,6 +259,19 @@ tbody tr:not(.row--break):hover td {
   }
   100% {
     box-shadow: 0 0 0 0 rgba(244, 67, 54, 0);
+  }
+}
+
+/* Animation pulse sur la ligne entière */
+@keyframes pulse-row {
+  0% {
+    background-color: rgba(244, 67, 54, 0);
+  }
+  50% {
+    background-color: rgba(244, 67, 54, 0.15);
+  }
+  100% {
+    background-color: rgba(244, 67, 54, 0);
   }
 }
 
