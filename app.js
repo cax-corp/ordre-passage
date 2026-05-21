@@ -43,7 +43,8 @@ function escapeHtml(value) {
 
 function statusBadge(status) {
   const label = statusLabels[status] || "Neutre";
-  return `<span class="status-badge status--${status}">${label}</span>`;
+  const cssClass = status.replace(/_/g, "-");
+  return `<span class="status-badge status--${cssClass}">${label}</span>`;
 }
 
 function render() {
