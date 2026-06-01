@@ -284,8 +284,8 @@ async function handleTimerElapsed(entry) {
       entry.status = "cancelled";
     } else {
       entry.status = "done";
+      entry.cancelled_at = null;
     }
-    entry.cancelled_at = null;
     entry.in_progress_started_at = null;
     moveNextToNeutral(entry.display_order);
     render();

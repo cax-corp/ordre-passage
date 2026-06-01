@@ -158,7 +158,7 @@ begin
   elsif p_new_status = 'cancelled' then
     if v_entry.status = 'in_progress' then
       update public.schedule_entries
-      set cancelled_at = coalesce(cancelled_at, now())
+      set cancelled_at = now()
       where id = p_entry_id;
       v_updated := found;
     else
@@ -225,7 +225,7 @@ begin
 
   update public.schedule_entries
   set status = case when v_entry.cancelled_at is not null then 'cancelled' else 'done' end,
-      cancelled_at = null,
+      cancelled_at = case when v_entry.cancelled_at is not null then v_entry.cancelled_at else null end,
       in_progress_started_at = null
   where id = p_entry_id;
 
