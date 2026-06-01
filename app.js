@@ -5,7 +5,7 @@ const statusLabels = {
   preparing: "Se preparent",
   in_progress: "En cours",
   done: "Termine",
-  cancelled: "Annule"
+  cancelled: "Annulé"
 };
 
 const tableBody = document.getElementById("scheduleBody");
@@ -121,7 +121,7 @@ function render() {
               <button class="btn" data-id="${entry.id}" data-status="preparing">Se preparent</button>
               <button class="btn" data-id="${entry.id}" data-status="in_progress">En cours</button>
               <button class="btn" data-id="${entry.id}" data-status="done">Termine</button>
-              <button class="btn" data-id="${entry.id}" data-status="cancelled">Annule</button>
+              <button class="btn" data-id="${entry.id}" data-status="cancelled">Annulé</button>
             </div>
           `
         : "";
@@ -145,7 +145,7 @@ function render() {
               <button class="btn" data-id="${entry.id}" data-status="preparing">Se preparent</button>
               <button class="btn" data-id="${entry.id}" data-status="in_progress">En cours</button>
               <button class="btn" data-id="${entry.id}" data-status="done">Termine</button>
-              <button class="btn" data-id="${entry.id}" data-status="cancelled">Annule</button>
+              <button class="btn" data-id="${entry.id}" data-status="cancelled">Annulé</button>
             </div>
           </td>
         `

@@ -225,7 +225,7 @@ begin
 
   update public.schedule_entries
   set status = case when v_entry.cancelled_at is not null then 'cancelled' else 'done' end,
-      cancelled_at = case when v_entry.cancelled_at is not null then v_entry.cancelled_at else null end,
+      cancelled_at = v_entry.cancelled_at,
       in_progress_started_at = null
   where id = p_entry_id;
 
