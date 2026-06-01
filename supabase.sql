@@ -17,10 +17,25 @@ create table if not exists public.schedule_entries (
   group_label text not null,
   is_break boolean not null default false,
   status text not null default 'neutral',
+  in_progress_started_at timestamptz,
+  cancelled_at timestamptz,
   updated_at timestamptz not null default now(),
   constraint schedule_entries_status_check
-    check (status in ('neutral', 'preparing', 'in_progress', 'done'))
+    check (status in ('neutral', 'preparing', 'in_progress', 'done', 'cancelled'))
 );
+
+alter table public.schedule_entries
+  add column if not exists in_progress_started_at timestamptz;
+
+alter table public.schedule_entries
+  add column if not exists cancelled_at timestamptz;
+
+alter table public.schedule_entries
+  drop constraint if exists schedule_entries_status_check;
+
+alter table public.schedule_entries
+  add constraint schedule_entries_status_check
+  check (status in ('neutral', 'preparing', 'in_progress', 'done', 'cancelled'));
 
 create or replace function public.touch_updated_at()
 returns trigger
@@ -110,8 +125,11 @@ language plpgsql
 security definer
 set search_path = public
 as $$
+declare
+  v_entry public.schedule_entries%rowtype;
+  v_updated boolean := false;
 begin
-  if p_new_status not in ('neutral', 'preparing', 'in_progress', 'done') then
+  if p_new_status not in ('neutral', 'preparing', 'in_progress', 'done', 'cancelled') then
     raise exception 'Invalid status';
   end if;
 
@@ -119,16 +137,119 @@ begin
     return false;
   end if;
 
-  update public.schedule_entries
-  set status = p_new_status
-  where id = p_entry_id and is_break = false;
+  select *
+  into v_entry
+  from public.schedule_entries
+  where id = p_entry_id
+    and is_break = false
+  for update;
 
-  return found;
+  if not found then
+    return false;
+  end if;
+
+  if p_new_status = 'in_progress' then
+    update public.schedule_entries
+    set status = 'in_progress',
+        in_progress_started_at = now(),
+        cancelled_at = null
+    where id = p_entry_id;
+    v_updated := found;
+  elsif p_new_status = 'cancelled' then
+    if v_entry.status = 'in_progress' then
+      update public.schedule_entries
+      set cancelled_at = coalesce(cancelled_at, now())
+      where id = p_entry_id;
+      v_updated := found;
+    else
+      update public.schedule_entries
+      set status = 'cancelled',
+          cancelled_at = now(),
+          in_progress_started_at = null
+      where id = p_entry_id;
+      v_updated := found;
+
+      update public.schedule_entries
+      set status = 'neutral',
+          cancelled_at = null,
+          in_progress_started_at = null
+      where id = (
+        select id
+        from public.schedule_entries
+        where display_order > v_entry.display_order
+          and not is_break
+          and status <> 'cancelled'
+        order by display_order
+        limit 1
+      );
+    end if;
+  else
+    update public.schedule_entries
+    set status = p_new_status,
+        cancelled_at = null,
+        in_progress_started_at = null
+    where id = p_entry_id;
+    v_updated := found;
+  end if;
+
+  return v_updated;
+end;
+$$;
+
+create or replace function public.advance_entry_after_timer(
+  p_entry_id bigint,
+  p_password text
+)
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_entry public.schedule_entries%rowtype;
+begin
+  if not public.verify_admin_password(p_password) then
+    return false;
+  end if;
+
+  select *
+  into v_entry
+  from public.schedule_entries
+  where id = p_entry_id
+    and is_break = false
+  for update;
+
+  if not found or v_entry.status <> 'in_progress' then
+    return false;
+  end if;
+
+  update public.schedule_entries
+  set status = case when v_entry.cancelled_at is not null then 'cancelled' else 'done' end,
+      cancelled_at = null,
+      in_progress_started_at = null
+  where id = p_entry_id;
+
+  update public.schedule_entries
+  set status = 'neutral',
+      cancelled_at = null,
+      in_progress_started_at = null
+  where id = (
+    select id
+    from public.schedule_entries
+    where display_order > v_entry.display_order
+      and not is_break
+      and status <> 'cancelled'
+    order by display_order
+    limit 1
+  );
+
+  return true;
 end;
 $$;
 
 grant execute on function public.verify_admin_password(text) to anon, authenticated;
 grant execute on function public.set_entry_status(bigint, text, text) to anon, authenticated;
+grant execute on function public.advance_entry_after_timer(bigint, text) to anon, authenticated;
 
 alter table public.schedule_entries replica identity full;
 
