@@ -14,6 +14,8 @@
   --in-progress-border: #c62828;
   --done: #4caf50;
   --done-border: #2e7d32;
+  --cancelled: #616161;
+  --cancelled-border: #424242;
 }
 
 * {
@@ -149,6 +151,12 @@ h1 {
   border-color: #2e7d32 !important;
 }
 
+.chip--cancelled {
+  background: #616161 !important;
+  color: #ffffff !important;
+  border-color: #424242 !important;
+}
+
 .board {
   border: 1px solid var(--line);
   background: var(--surface);
@@ -249,6 +257,18 @@ tbody tr:has(.status--in-progress) {
   border-color: #2e7d32 !important;
 }
 
+.status--cancelled {
+  background: #616161 !important;
+  color: #ffffff !important;
+  border-color: #424242 !important;
+}
+
+.timer {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
 /* Animation pulse sur le badge */
 @keyframes pulse-badge {
   0% {
@@ -283,6 +303,15 @@ tbody tr:has(.status--in-progress) {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
+}
+
+.admin-controls-mobile {
+  margin-top: 8px;
+}
+
+.group-label {
+  white-space: normal;
+  word-break: break-word;
 }
 
 .hidden {
@@ -346,5 +375,18 @@ tbody tr:has(.status--in-progress) {
     width: 100%;
     font-size: 12px;
     padding: 6px 8px;
+  }
+
+  .admin-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-controls .btn {
+    width: 100%;
+  }
+
+  .cell-group {
+    min-width: 220px;
   }
 }
